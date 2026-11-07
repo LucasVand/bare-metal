@@ -1,0 +1,18 @@
+CompileFlags:
+  CompilationDatabase: "builddir"
+
+  Add: [
+      "-ffreestanding",
+      "-nostdinc",
+      "-nostdlib",
+      # Redirect standard system includes to a non-existent directory
+      "--sysroot=/var/empty",
+      "-isysroot=/var/empty",
+      "-resource-dir=/Users/lucasvanderwielen/.espressif/v6.1/tools/esp-clang/lib/clang/21",
+      "-isystem",
+      "/Users/lucasvanderwielen/.espressif/v6.1/tools/esp-clang/lib/clang/21/include",
+    ]
+
+Hover:
+  ShowComments: true
+  CommentFormat: Doxygen
