@@ -6,6 +6,7 @@
 #include "wdt/wdt_registers.h"
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define UHCI0_DMA_OUT_LINK_REG ((volatile unsigned int *)0x3FF54024)
 
@@ -91,6 +92,7 @@ void call_start_cpu0(void) {
 
   uart_tx_cstr(msg, UART0_BASE);
 
+  printf("My formated string %d", 40);
   uart_tx_cstr("Please enter your string: \r\n", UART0_BASE);
   char buf[100];
   size_t c = 0;

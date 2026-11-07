@@ -12,12 +12,14 @@ sources = [
 subdir('src/uart')
 subdir('src/wdt')
 subdir('src/stdio')
+subdir('src/mem')
 
 # This handles: xtensa-esp32-elf-gcc -nostdlib -T linker.ld main.c -o main.elf
 my_elf = executable('main.elf',
   sources: sources,
   include_directories: inc_dir,
-  link_args: ['-T', meson.current_source_dir() / 'linker.ld'],
+  c_args: ['-fno-tree-loop-distribute-patterns'],
+  link_args: ['-T', meson.current_source_dir() / 'linker.ld', '-lgcc'],
   # Ensure Meson tracks the linker script as a dependency
   link_depends: 'linker.ld' 
 )

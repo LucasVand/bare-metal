@@ -42,6 +42,7 @@ size_t uart_tx_cstr(const char *str, uint32_t uart) {
   while (*str != '\0') {
     uart_tx_byte(*str, uart);
     str++;
+    count++;
   }
   return count;
 }
