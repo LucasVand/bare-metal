@@ -1,24 +1,13 @@
 
-project('baremetal', 'c', version: '1.0', 
-  default_options: [
-  'implicit_include_directories=false'
-])
+project('baremetal', 'c', version: '1.0')
 
-inc_dir = include_directories('include')
-
-sources = [
-  'src/main.c'
-]
-subdir('src/uart')
-subdir('src/wdt')
-subdir('src/stdio')
-subdir('src/mem')
+esplib_dep = subproject('esplib').get_variable('esplib_dep')
 
 # This handles: xtensa-esp32-elf-gcc -nostdlib -T linker.ld main.c -o main.elf
 my_elf = executable('main.elf',
-  sources: sources,
-  include_directories: inc_dir,
-  c_args: ['-fno-tree-loop-distribute-patterns'],
+  sources: ['src/main.c'],
+  dependencies: esplib_dep,
+  implicit_include_directories: false,
   link_args: ['-T', meson.current_source_dir() / 'linker.ld', '-lgcc'],
   # Ensure Meson tracks the linker script as a dependency
   link_depends: 'linker.ld' 

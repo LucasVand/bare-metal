@@ -12,6 +12,9 @@ CompileFlags:
       "-isystem",
       "/Users/lucasvanderwielen/.espressif/v6.1/tools/esp-clang/lib/clang/21/include",
     ]
+  Remove: [
+  "-fno-tree-loop-distribute-patterns"
+  ]
 
 Hover:
   ShowComments: true
