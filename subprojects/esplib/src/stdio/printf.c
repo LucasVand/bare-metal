@@ -136,6 +136,7 @@ static size_t format_impl(size_t (*write_fn)(const char *data, size_t len),
     }
 
     int long_mod = 0;
+    int size_mod = 0;
     if (*p == 'l') {
       p++;
       long_mod = 1;
@@ -148,6 +149,9 @@ static size_t format_impl(size_t (*write_fn)(const char *data, size_t len),
       if (*p == 'h') {
         p++;
       }
+    } else if (*p == 'z') {
+      p++;
+      size_mod = 1;
     }
 
     switch (*p) {
@@ -197,6 +201,8 @@ static size_t format_impl(size_t (*write_fn)(const char *data, size_t len),
         v = va_arg(args, long long);
       } else if (long_mod == 1) {
         v = va_arg(args, long);
+      } else if (size_mod) {
+        v = (long long)va_arg(args, ptrdiff_t);
       } else {
         v = va_arg(args, int);
       }
@@ -217,6 +223,8 @@ static size_t format_impl(size_t (*write_fn)(const char *data, size_t len),
         v = va_arg(args, unsigned long long);
       } else if (long_mod == 1) {
         v = va_arg(args, unsigned long);
+      } else if (size_mod) {
+        v = (uint64_t)va_arg(args, size_t);
       } else {
         v = va_arg(args, unsigned int);
       }

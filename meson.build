@@ -2,15 +2,14 @@
 project('baremetal', 'c', version: '1.0')
 
 esplib_dep = subproject('esplib').get_variable('esplib_dep')
+linker_script = subproject('esplib').get_variable('linker_script')
 
 # This handles: xtensa-esp32-elf-gcc -nostdlib -T linker.ld main.c -o main.elf
 my_elf = executable('main.elf',
   sources: ['src/main.c'],
   dependencies: esplib_dep,
   implicit_include_directories: false,
-  link_args: ['-T', meson.current_source_dir() / 'linker.ld', '-lgcc'],
-  # Ensure Meson tracks the linker script as a dependency
-  link_depends: 'linker.ld' 
+  link_depends: linker_script
 )
 
 # Extract the esptool binary we defined in cross.ini
