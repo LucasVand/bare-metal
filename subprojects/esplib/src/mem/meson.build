@@ -4,4 +4,5 @@ sources += files([
   'memcpy.c',
   'memmove.c',
   'memcmp.c',
+  'bss_start.c'
 ])

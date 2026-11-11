@@ -14,6 +14,9 @@ my_elf = executable('main.elf',
 
 # Extract the esptool binary we defined in cross.ini
 esptool = find_program('esptool')
+nm = find_program('xtensa-esp32-elf-nm') 
+addr2line = find_program('scripts/addr2line.sh') 
+objdump = find_program('scripts/objdump.sh') 
 
 # Convert the ELF to a firmware BIN image
 # This handles: esptool --chip esp32 elf2image main.elf
@@ -54,3 +57,7 @@ run_target('image-info',
     my_bin
 ]
 )
+
+run_target('nm', command: [nm, '-S', '--size-sort', my_elf])
+run_target('addr2line', command: [addr2line, my_elf])
+run_target('objdump', command: [objdump, my_elf])

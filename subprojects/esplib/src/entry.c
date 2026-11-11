@@ -1,8 +1,8 @@
 
 #include "mem.h"
-#include "scheduler_int.h"
 #include "stdio.h"
 #include "sys_start.h"
+#include "task_int.h"
 #include "timg.h"
 #include <stddef.h>
 
