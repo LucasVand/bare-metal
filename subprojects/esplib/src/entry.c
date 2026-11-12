@@ -30,6 +30,7 @@ void call_start_cpu0(void) {
     scheduler_loop();
   }
 
+  printf("All tasks completed\r\n");
   while (1) {
     asm volatile("nop");
   }
