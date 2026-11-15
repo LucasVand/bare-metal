@@ -15,5 +15,5 @@ if [ -z "$A" ]; then
 fi
 
 # Run the ESP32 specific tool
-xtensa-esp32-elf-addr2line -pfia -e "$EXE" "$A"
+llvm-addr2line -pfia -e "$EXE" "$A"
 

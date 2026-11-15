@@ -4,7 +4,6 @@ project('baremetal', 'c', version: '1.0')
 esplib_dep = subproject('esplib').get_variable('esplib_dep')
 linker_script = subproject('esplib').get_variable('linker_script')
 
-# This handles: xtensa-esp32-elf-gcc -nostdlib -T linker.ld main.c -o main.elf
 my_elf = executable('main.elf',
   sources: ['src/main.c'],
   dependencies: esplib_dep,
@@ -14,7 +13,7 @@ my_elf = executable('main.elf',
 
 # Extract the esptool binary we defined in cross.ini
 esptool = find_program('esptool')
-nm = find_program('xtensa-esp32-elf-nm') 
+nm = find_program('llvm-nm') 
 addr2line = find_program('scripts/addr2line.sh') 
 objdump = find_program('scripts/objdump.sh') 
 
@@ -25,11 +24,8 @@ my_bin = custom_target('firmware_image',
   output: 'main.bin', 
   command: [
     esptool, 
-    '--chip', 'esp32', 
+    '--chip', 'esp32c6', 
     'elf2image', 
-    '--flash-mode', 'dio',
-    '--flash-freq', '40m',
-    '--flash-size',  '4MB' ,
     '@INPUT@', 
     '--output', '@OUTPUT@' 
   ],
@@ -42,7 +38,7 @@ my_bin = custom_target('firmware_image',
 run_target('flash',
   command: [
     esptool,
-    '--chip', 'esp32',
+    '--chip', 'esp32c6',
     'write-flash',
     '0x1000',      # The standard bare-metal factory app offset for ESP32
     my_bin          # Meson automatically resolves this to the compiled main.bin file path
@@ -52,7 +48,7 @@ run_target('flash',
 run_target('image-info',
   command: [
     esptool,
-    '--chip', 'esp32',
+    '--chip', 'esp32c6',
     'image-info',
     my_bin
 ]

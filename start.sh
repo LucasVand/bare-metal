@@ -16,6 +16,7 @@ export PATH=$IDF_TOOLS/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin:$PATH
 
 # clang/clangd
 export PATH=$IDF_TOOLS/esp-clang/bin:$PATH
+export PATH=$IDF_TOOLS/esp-clangd/bin:$PATH
 
 # openocd
 export PATH=$IDF_TOOLS/tools/openocd-esp32/v0.12.0-esp32-20260703/openocd-esp32/bin:$PATH

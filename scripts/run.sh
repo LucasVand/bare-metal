@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$ROOT_DIR"
 
-BUILD_DIR="builddir"
+BUILD_DIR="${BUILD_DIR:-builddir}"
 BIN_FILE="${BUILD_DIR}/main.bin"
 FLASH_FILE="${BUILD_DIR}/flash.bin"
 FLASH_OFFSET=4096
