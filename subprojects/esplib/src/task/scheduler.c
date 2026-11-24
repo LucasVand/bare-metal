@@ -24,8 +24,6 @@ size_t task_count = 0;
 size_t head = 0;
 size_t tail = 0;
 
-void end_of_scheduler(void *arg) { printf("End of scheduler\r\n"); }
-
 void task_current_status_set(task_status_t status) {
   task_current->status = status;
 }
@@ -33,14 +31,18 @@ task_status_t task_current_status_get() { return task_current->status; }
 
 void task_stack_setup(task_t *task) {
   int ctx_size = 116 / 4;
+  int total_size = ctx_size + 2;
   int32_t *top = (int32_t *)task->sp;
-  memset((void *)(top - (ctx_size + 1)), 0, ctx_size + 1);
+  memset((void *)(top - total_size), 0, total_size);
 
-  // extra 4 for the actual saved entry point not the bootstrap task
-  *top -= 1;
+  // extra 8 for the actual saved entry point and args not the bootstrap task
+  top -= 1;
+  *top = (uint32_t)task->arg;
+
+  top -= 1;
   *top = (uint32_t)task->entry;
-  top -= ctx_size;
 
+  top -= ctx_size;
   *top = (uint32_t)__bootstrap_task;
 
   task->sp = (void *)top;

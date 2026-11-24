@@ -5,7 +5,6 @@ lib_c_args = []
 
 esplib_inc = include_directories('include')
 private_inc = include_directories('src/include')
-xtensa_inc = include_directories('src/include/xtensa')
 
 
 sources = [
@@ -18,7 +17,7 @@ subdir('src/task')
 
 esplib = static_library('esplib',
   sources,
-  include_directories: [esplib_inc, private_inc, xtensa_inc],
+  include_directories: [esplib_inc, private_inc],
   implicit_include_directories: false,
   c_args: lib_c_args,
   pic: false,

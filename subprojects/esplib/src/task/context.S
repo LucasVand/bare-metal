@@ -83,13 +83,14 @@ __context_switch:
 // void __bootstrap_task()
 __bootstrap_task:
   lw t0, 0(sp)
+  lw a0, 4(sp)
 
-  addi sp, sp, 4
+  addi sp, sp, 8
   // jump unto the task
   jalr ra, t0, 0
   
   // set the current status to cancelled
-  li a1, 0
+  li a0, 0
   jal ra, task_current_status_set
 
   // yield the task
