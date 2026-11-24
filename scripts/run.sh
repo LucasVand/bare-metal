@@ -8,10 +8,10 @@ cd "$ROOT_DIR"
 BUILD_DIR="${BUILD_DIR:-builddir}"
 BIN_FILE="${BUILD_DIR}/main.bin"
 FLASH_FILE="${BUILD_DIR}/flash.bin"
-FLASH_OFFSET=4096
+FLASH_OFFSET=0             # C6 ROM loads the image from flash offset 0x0
 
-if ! command -v qemu-system-xtensa >/dev/null 2>&1; then
-  echo "Error: qemu-system-xtensa not found in PATH." >&2
+if ! command -v esp-emu >/dev/null 2>&1; then
+  echo "Error: esp-emu not found in PATH." >&2
   exit 1
 fi
 
@@ -33,8 +33,7 @@ with open(flash_path, "wb") as f:
     f.write(image)
 PY
 
-exec qemu-system-xtensa \
-  -nographic \
-  -machine esp32 \
-  -drive "file=${FLASH_FILE},if=mtd,format=raw" \
+exec esp-emu \
+  --chip esp32c6 \
+  --firmware "$FLASH_FILE" \
   "$@"

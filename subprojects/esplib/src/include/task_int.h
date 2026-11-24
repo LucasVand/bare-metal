@@ -5,11 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef enum {
-  READY,
-  CANCELLED,
-} task_status_t;
-
 typedef struct {
   void (*entry)(void *);
   void *arg;

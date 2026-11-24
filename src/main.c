@@ -10,5 +10,7 @@ void main(void *arg) {
   task_create(say, NULL);
   task_create(say2, NULL);
 
+  task_yield();
+
   printf("hello from main new\n\r");
 }

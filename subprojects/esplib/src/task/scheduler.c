@@ -6,8 +6,9 @@
 #include <stdint.h>
 
 extern void __context_switch(uint32_t **old_sp, uint32_t **new_sp);
-extern void __task_bootstrap(void);
+extern void __bootstrap_task();
 void task_yield(void);
+void end_scheduler(void);
 
 #define TASK_QUEUE_SIZE 5
 
@@ -15,10 +16,9 @@ task_t *queue[TASK_QUEUE_SIZE];
 task_t tasks[TASK_QUEUE_SIZE];
 uint32_t stacks[TASK_QUEUE_SIZE][2048];
 
-task_t *task_current;
-task_t task_inital;
+task_t *task_current = NULL;
 
-uint32_t task_inital_stack[2048];
+uint32_t *scheduler_entry_sp;
 
 size_t task_count = 0;
 size_t head = 0;
@@ -26,28 +26,24 @@ size_t tail = 0;
 
 void end_of_scheduler(void *arg) { printf("End of scheduler\r\n"); }
 
+void task_current_status_set(task_status_t status) {
+  task_current->status = status;
+}
+task_status_t task_current_status_get() { return task_current->status; }
+
 void task_stack_setup(task_t *task) {
-  uintptr_t top = (uintptr_t)task->sp & ~(uintptr_t)0xF;
-  uintptr_t bootstrap_sp = top - 48;
-  uint32_t *ctx_frame = (uint32_t *)(top - 160);
-  uint32_t *caller_frame = (uint32_t *)(top - 176);
+  int ctx_size = 116 / 4;
+  int32_t *top = (int32_t *)task->sp;
+  memset((void *)(top - (ctx_size + 1)), 0, ctx_size + 1);
 
-  memset((void *)(top - 176), 0, 176);
+  // extra 4 for the actual saved entry point not the bootstrap task
+  *top -= 1;
+  *top = (uint32_t)task->entry;
+  top -= ctx_size;
 
-  *(uint32_t *)(bootstrap_sp - 12) = (uint32_t)top;
+  *top = (uint32_t)__bootstrap_task;
 
-  ctx_frame[0] = ((uint32_t)__task_bootstrap & 0x3FFFFFFFu) | (2u << 30);
-  ctx_frame[1] = 0x00060000u;
-  ctx_frame[2] = 0;
-  ctx_frame[3] = 0;
-  ctx_frame[4] = 0;
-
-  caller_frame[0] = 0;
-  caller_frame[1] = (uint32_t)bootstrap_sp;
-  caller_frame[2] = (uint32_t)task->arg;
-  caller_frame[3] = (uint32_t)task->entry;
-
-  task->sp = ctx_frame;
+  task->sp = (void *)top;
 }
 
 static void task_queue_push(task_t *task) {
@@ -98,51 +94,45 @@ size_t task_cancel(task_handle_t handle) {
 void task_switch(task_t *new_task) {
   printf("Starting new task (Entry: %p) (SP: %p)\r\n", new_task->entry,
          new_task->sp);
-  task_t *old_task = task_current;
+  void *old_sp;
+  if (task_current == NULL) {
+    old_sp = &scheduler_entry_sp;
+  } else {
+    old_sp = &task_current->sp;
+  }
+
   task_current = new_task;
-  __context_switch(&old_task->sp, &new_task->sp);
-  printf("Return from task (Entry: %p) (SP: %p)\r\n", new_task->entry,
-         new_task->sp);
+  __context_switch(old_sp, &new_task->sp);
 }
 
 void scheduler_loop() {
   printf("Starting scheduler \r\n");
-  task_inital.sp = &task_inital_stack[2047];
-  task_inital.entry = end_of_scheduler;
 
-  printf("Starting inital task (Entry: %p) (SP: %p)\r\n", task_inital.sp,
-         task_inital.entry);
-
-  task_current = &task_inital;
-
-  printf("Start task setup (Entry: %p) (SP: %p)\r\n", task_inital.entry,
-         task_inital.sp);
   task_t *new_task = task_queue_pop();
   if (new_task == NULL) {
     return;
   }
 
+  asm volatile("mv %0, sp" : "=r"(scheduler_entry_sp));
+
   task_switch(new_task);
 }
 
-void task_exit(void) {
-  task_current->status = CANCELLED;
-  task_yield();
-  while (1) {
-  }
-}
-
 void task_yield() {
-  if (task_current != &task_inital && task_current->status == READY) {
+  if (task_current->status == READY) {
     task_queue_push(task_current);
   }
 
   task_t *next_task = task_queue_pop();
   if (next_task == NULL) {
-    next_task = &task_inital;
+    end_scheduler();
   }
   if (next_task == task_current) {
     return;
   }
   task_switch(next_task);
+}
+
+void end_scheduler(void) {
+  __context_switch(&task_current->sp, &scheduler_entry_sp);
 }

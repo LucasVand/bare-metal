@@ -40,7 +40,7 @@ run_target('flash',
     esptool,
     '--chip', 'esp32c6',
     'write-flash',
-    '0x1000',      # The standard bare-metal factory app offset for ESP32
+    '0x0',         # C6 ROM loads the 2nd stage image from flash offset 0x0
     my_bin          # Meson automatically resolves this to the compiled main.bin file path
   ]
 )

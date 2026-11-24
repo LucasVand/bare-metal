@@ -2,8 +2,8 @@
 ENTRY(call_start_cpu0)
 
 MEMORY {
-  sram_1 (RX) : ORIGIN = 0x4080000, LENGTH = 0x30000
-  sram_2 (RW) : ORIGIN = 0x40A0000, LENGTH = 0x30000
+  sram_1 (RX) : ORIGIN = 0x40800000, LENGTH = 0x40000
+  sram_2 (RW) : ORIGIN = 0x40840000, LENGTH = 0x30000
 }
 
 SECTIONS {

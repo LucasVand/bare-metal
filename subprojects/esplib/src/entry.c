@@ -1,5 +1,4 @@
 
-#include "mem.h"
 #include "stdio.h"
 #include "sys_start.h"
 #include "task_int.h"
@@ -14,13 +13,14 @@ void call_start_cpu0(void) {
   start_bss();
 
   rwdt_unlock();
-  RTC_CNTL->wdtconfig0.bits.en = 0;
-  RTC_CNTL->wdtconfig0.bits.flashboot_mod_en = 0;
+  RTC_WDT->wdtconfig0.bits.en = 0;
+  RTC_WDT->wdtconfig0.bits.flashboot_mod_en = 0;
   rwdt_lock();
 
   mwdt_unlock(TIMG0);
   TIMG0->wdtconfig0.bits.en = 0;
   TIMG0->wdtconfig0.bits.flashboot_mod_en = 0;
+  mwdt_conf_update(TIMG0);
   mwdt_lock(TIMG0);
 
   task_handle_t handle = task_create(main, NULL);

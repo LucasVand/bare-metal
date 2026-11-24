@@ -2,9 +2,6 @@ project('esplib', 'c')
 
 cc = meson.get_compiler('c')
 lib_c_args = []
-if cc.get_id() == 'gcc'
-  lib_c_args += ['-fno-tree-loop-distribute-patterns']
-endif
 
 esplib_inc = include_directories('include')
 private_inc = include_directories('src/include')
@@ -30,11 +27,7 @@ esplib = static_library('esplib',
 linker_script = files('linker.ld')
 
 dep_link_args = ['-T', meson.current_source_dir() / 'linker.ld', '-e', 'call_start_cpu0']
-if cc.get_id() == 'gcc'
-  dep_link_args += ['-lgcc']
-else
-  dep_link_args += ['-lclang_rt.builtins']
-endif
+dep_link_args += ['-lclang_rt.builtins']
 
 esplib_dep = declare_dependency(
   link_whole: esplib,
