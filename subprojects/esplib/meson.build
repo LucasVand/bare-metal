@@ -6,6 +6,8 @@ lib_c_args = []
 esplib_inc = include_directories('include')
 private_inc = include_directories('src/include')
 
+portable_sources = [
+]
 
 sources = [
   'src/entry.c',
@@ -14,6 +16,11 @@ subdir('src/mem')
 subdir('src/stdio')
 subdir('src/uart')
 subdir('src/task')
+subdir('src/alloc')
+subdir('src/collections')
+
+sources += portable_sources
+
 
 esplib = static_library('esplib',
   sources,
@@ -23,13 +30,30 @@ esplib = static_library('esplib',
   pic: false,
 )
 
+esplib_native = static_library('esplib_native',
+  portable_sources,
+  include_directories: [esplib_inc, private_inc],
+  implicit_include_directories: false,
+  c_args: lib_c_args,
+  native: true
+)
+
+
 linker_script = files('linker.ld')
 
 dep_link_args = ['-T', meson.current_source_dir() / 'linker.ld', '-e', 'call_start_cpu0']
 dep_link_args += ['-lclang_rt.builtins']
+
+
 
 esplib_dep = declare_dependency(
   link_whole: esplib,
   include_directories: esplib_inc,
   link_args: dep_link_args,
 )
+
+esplib_dep_native = declare_dependency(
+  link_whole: esplib_native,
+  include_directories: esplib_inc,
+)
+subdir('tests')

@@ -23,11 +23,13 @@ void call_start_cpu0(void) {
   mwdt_conf_update(TIMG0);
   mwdt_lock(TIMG0);
 
-  task_handle_t handle = task_create(main, NULL);
+  scheduler_allocators_start();
+
+  TaskHandle handle = task_create(main, NULL, 0);
   if (handle == NULL) {
     printf("(FATAL) Unable to create main task\r\n");
   } else {
-    scheduler_loop();
+    scheduler_start();
   }
 
   printf("All tasks completed\r\n");

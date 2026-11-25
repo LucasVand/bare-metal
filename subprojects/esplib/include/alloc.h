@@ -17,10 +17,13 @@ typedef struct {
   size_t block_size;
   void *buf;
   size_t buf_size;
-} alloc_fb;
+  size_t size;
+} FixedBlockAllocator;
 
-size_t alloc_fb_new(alloc_fb *allocator, void *buf, size_t buf_size,
-                    size_t block_size);
+size_t fb_new(FixedBlockAllocator *allocator, void *buf, size_t buf_size,
+              size_t block_size);
 
-void *alloc_fb_alloc(alloc_fb *allocator);
-void alloc_fb_free(alloc_fb *allocator, void *allocation);
+void *fb_alloc(FixedBlockAllocator *allocator);
+void fb_free(FixedBlockAllocator *allocator, void *allocation);
+size_t fb_size(FixedBlockAllocator *allocator);
+size_t fb_capacity(FixedBlockAllocator *allocator);

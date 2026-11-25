@@ -11,8 +11,8 @@ int number = 10;
 
 void main(void *arg) {
   printf("hello from main before\n\r");
-  task_create(say, &number);
-  task_create(say2, NULL);
+  task_create(say, &number, 1);
+  task_create(say2, NULL, 100);
 
   task_yield();
 

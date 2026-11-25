@@ -1,5 +1,5 @@
 
 sources += files([
-  'scheduler.c',
+  'task.c',
   'context.S',
 ])
